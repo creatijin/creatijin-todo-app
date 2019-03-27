@@ -6,6 +6,7 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <Text>Creatijin Todo app!</Text>
+        <Text>React native app</Text>
       </View>
     );
   }
