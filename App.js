@@ -1,20 +1,42 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions, Platform } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Dimensions, Platform, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import ToDo from "./ToDo";
+
 
 const { height, width } = Dimensions.get("window");
 
 export default class App extends React.Component {
+  state = {
+    newToDo: ""
+  };
   render() {
+    const { newToDo } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content"/>
         <Text style={styles.title}>Creatijin To DO</Text>
         <View style={styles.card}>
-          <TextInput style={styles.input} placeholder={"New To Do"}/>
+          <TextInput 
+          style={styles.input} 
+          placeholder={"New To Do"} 
+          value={newToDo} 
+          onChangeText={this._crontollNewToDo}
+          placeholderTextColor={"#999"} 
+          returnKeyType={"done"}
+          autoCorrect={false}
+          />
+          <ScrollView>
+            <ToDo />
+          </ScrollView>
         </View>
       </View>
     );
+  }
+  _crontollNewToDo = text => {
+    this.setState({
+      newToDo: text
+    });
   }
 }
 
@@ -37,7 +59,6 @@ const styles = StyleSheet.create({
     width: width - 50,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 10,
     ...Platform.select({
       ios: {
         shadowColor: "rgb(50,50,50)",
@@ -52,5 +73,11 @@ const styles = StyleSheet.create({
         elevation: 3
       }
     })
+  },
+  input: {
+    padding: 20,
+    borderBottomColor: "#bbb",
+    borderBottomWidth: 1,
+    fontSize: 20
   }
 });
