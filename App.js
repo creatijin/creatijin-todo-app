@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Dimensions, Platform, ScrollView, AsyncStorage } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { AppLoading } from "expo";
 import ToDo from "./ToDo";
@@ -40,6 +40,7 @@ export default class App extends React.Component {
           />
           <ScrollView contentContainerStyle={styles.toDos}>
             {Object.values(toDos)
+              .reverse()
               .map(toDo => (
               <ToDo key={toDo.id}
                 deleteToDo={this._deleteToDo}
@@ -58,10 +59,15 @@ export default class App extends React.Component {
       newToDo: text
     });   
   };
-  _loadToDos = () => {
-    this.setState({
-      loadedToDos: true
-    }); 
+  _loadToDos = async () => {
+    try {
+      const toDos = await AsyncStorage.getItem("toDos");
+      const parsedToDos = JSON.parse(toDos);
+      console.log(toDos);
+      this.setState({loadedToDos: true, toDos: parsedToDos});
+    } catch(err) {
+      console.log(err)
+    }
   };
   _addToDo = () => {
     const { newToDo } = this.state;
@@ -83,6 +89,7 @@ export default class App extends React.Component {
           ...newToDoObject
         }
       }
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
   };
@@ -94,6 +101,7 @@ export default class App extends React.Component {
         ...prevState,
         ...toDos
       };
+      this._saveToDos(newState.toDos);
       return {...newState};
     });
   }
@@ -109,6 +117,7 @@ export default class App extends React.Component {
           }
         }
       };
+      this._saveToDos(newState.toDos);
       return {...newState};
     });
   }
@@ -124,6 +133,7 @@ export default class App extends React.Component {
           }
         }
       };
+      this._saveToDos(newState.toDos);
       return {...newState};
     });
   }
@@ -136,8 +146,12 @@ export default class App extends React.Component {
           [id]: { ...prevState.toDos[id], text: text }
         }
       };
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
+  };
+  _saveToDos = newToDos => {
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos));
   };
 }
 
